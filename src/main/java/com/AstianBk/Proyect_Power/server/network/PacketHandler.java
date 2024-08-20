@@ -2,8 +2,6 @@ package com.AstianBk.Proyect_Power.server.network;
 
 import com.AstianBk.Proyect_Power.common.ProjectPower;
 import com.AstianBk.Proyect_Power.server.network.message.PacketKeySync;
-import com.TBK.creature_compendium.common.CreatureCompendium;
-import com.TBK.creature_compendium.server.network.message.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
