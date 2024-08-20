@@ -1,5 +1,9 @@
 package com.AstianBk.Proyect_Power.common;
 
+import com.AstianBk.Proyect_Power.common.keybind.BKKeybinds;
+import com.AstianBk.Proyect_Power.common.register.PWCreativeTabs;
+import com.AstianBk.Proyect_Power.common.register.PWItems;
+import com.AstianBk.Proyect_Power.common.register.PWPower;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -18,7 +22,9 @@ public class ProjectPower
     public ProjectPower()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+        PWPower.init();
+        PWItems.ITEMS.register(modEventBus);
+        PWCreativeTabs.TABS.register(modEventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
