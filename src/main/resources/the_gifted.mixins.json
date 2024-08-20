@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.AstianBk.the_gifted.common.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "refmap": "the_gifted.refmap.json",
+  "mixins": [
+    "PlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,4 +1,4 @@
-package com.AstianBk.Proyect_Power.server.powers;
+package com.AstianBk.the_gifted.server.powers;
 
 public enum ElementPower {
     NORMAL,

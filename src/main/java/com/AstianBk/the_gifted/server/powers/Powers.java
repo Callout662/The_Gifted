@@ -1,6 +1,6 @@
-package com.AstianBk.Proyect_Power.server.powers;
+package com.AstianBk.the_gifted.server.powers;
 
-import com.AstianBk.Proyect_Power.common.register.PWPower;
+import com.AstianBk.the_gifted.common.register.PWPower;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

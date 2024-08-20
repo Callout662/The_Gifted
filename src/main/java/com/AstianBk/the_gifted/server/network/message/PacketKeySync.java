@@ -1,7 +1,7 @@
-package com.AstianBk.Proyect_Power.server.network.message;
+package com.AstianBk.the_gifted.server.network.message;
 
-import com.AstianBk.Proyect_Power.server.capability.PowerPlayerCapability;
-import com.AstianBk.Proyect_Power.server.network.Handler;
+import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
+import com.AstianBk.the_gifted.server.network.Handler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;

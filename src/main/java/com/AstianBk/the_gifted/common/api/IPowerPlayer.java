@@ -1,9 +1,8 @@
-package com.AstianBk.Proyect_Power.common.api;
+package com.AstianBk.the_gifted.common.api;
 
-import com.AstianBk.Proyect_Power.server.powers.Power;
-import com.AstianBk.Proyect_Power.server.powers.Powers;
+import com.AstianBk.the_gifted.server.powers.Power;
+import com.AstianBk.the_gifted.server.powers.Powers;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -23,6 +22,7 @@ public interface IPowerPlayer extends INBTSerializable<CompoundTag> {
     void tick(Player player);
     void onJoinGame(Player player, EntityJoinLevelEvent event);
     void handledPower(Player player,Power power);
+    public void stopPower(Player player,Power power);
     void handledPassive(Player player,Power power);
     boolean canUsePower();
     boolean haveAlterEgo();
@@ -31,6 +31,6 @@ public interface IPowerPlayer extends INBTSerializable<CompoundTag> {
     void syncPower(Player player);
     void upPower();
     void downPower();
-    void swingHand(InteractionHand hand,Player player);
+    void swingHand(Player player);
 
 }

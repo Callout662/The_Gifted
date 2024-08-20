@@ -1,6 +1,7 @@
-package com.AstianBk.Proyect_Power.server.network;
+package com.AstianBk.the_gifted.server.network;
 
-import com.AstianBk.Proyect_Power.common.api.IPowerPlayer;
+import com.AstianBk.the_gifted.common.api.IPowerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -23,5 +24,16 @@ public class Handler {
     @OnlyIn(Dist.CLIENT)
     public static void downPower(IPowerPlayer player){
         player.downPower();
+    }
+
+    public static void handlerManager(int id, IPowerPlayer entity) {
+        switch (id){
+            case 0->{
+                entity.swingHand(entity.getPlayer());
+            }
+            case 1->{
+                entity.getUsingPower().startPower(entity.getPlayer());
+            }
+        }
     }
 }

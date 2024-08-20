@@ -1,9 +1,9 @@
-package com.AstianBk.Proyect_Power.common;
+package com.AstianBk.the_gifted.common;
 
-import com.AstianBk.Proyect_Power.common.keybind.BKKeybinds;
-import com.AstianBk.Proyect_Power.common.register.PWCreativeTabs;
-import com.AstianBk.Proyect_Power.common.register.PWItems;
-import com.AstianBk.Proyect_Power.common.register.PWPower;
+import com.AstianBk.the_gifted.common.register.PWCreativeTabs;
+import com.AstianBk.the_gifted.common.register.PWItems;
+import com.AstianBk.the_gifted.common.register.PWPower;
+import com.AstianBk.the_gifted.server.network.PacketHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -13,15 +13,16 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(ProjectPower.MODID)
-public class ProjectPower
+@Mod(TheGifted.MODID)
+public class TheGifted
 {
-    public static final String MODID = "project_power";
+    public static final String MODID = "the_gifted";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public ProjectPower()
+    public TheGifted()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        PacketHandler.registerMessages();
         PWPower.init();
         PWItems.ITEMS.register(modEventBus);
         PWCreativeTabs.TABS.register(modEventBus);

@@ -1,14 +1,18 @@
-package com.AstianBk.Proyect_Power.server.capability;
+package com.AstianBk.the_gifted.server.capability;
 
-import com.AstianBk.Proyect_Power.common.api.IPowerPlayer;
-import com.AstianBk.Proyect_Power.server.powers.Power;
-import com.AstianBk.Proyect_Power.server.powers.Powers;
+import com.AstianBk.the_gifted.common.api.IPowerPlayer;
+import com.AstianBk.the_gifted.common.register.PWPower;
+import com.AstianBk.the_gifted.server.network.PacketHandler;
+import com.AstianBk.the_gifted.server.network.message.PacketHandlerPower;
+import com.AstianBk.the_gifted.server.powers.Power;
+import com.AstianBk.the_gifted.server.powers.Powers;
 import com.google.common.collect.Maps;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -21,8 +25,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class PowerPlayerCapability implements IPowerPlayer {
-    public Power usingPower;
+    public Power usingPower=Power.NONE;
     Player player;
+    Level level;
     Powers powers=new Powers(Maps.newHashMap());
     Map<Integer,Power> passives= Maps.newHashMap();
     int posSelectPower=1;
@@ -85,23 +90,37 @@ public class PowerPlayerCapability implements IPowerPlayer {
                     power.tick(cap);
                 }
             }
-
         }
-        if(this.getUsingPower()!=Power.NONE){
-            if(this.getUsingPower().instantUse && this.castingTimer==this.getStartTime()){
+        if(this.getUsingPower()!=null && this.usingPower()){
+            if(this.castingTimer==this.getUsingPower().lauchTime){
                 this.handledPower(player,this.getUsingPower());
             }
+            this.castingTimer--;
+            if(this.castingTimer==0){
+                this.stopPower(player,this.getUsingPower());
+                this.setUsingPower(Power.NONE);
+            }
         }
-
     }
     @Override
     public void onJoinGame(Player player, EntityJoinLevelEvent event) {
-
+        PowerPlayerCapability cap=PowerPlayerCapability.get(player);
+        if(cap!=null){
+            for (int i=1;i<6;i++){
+                this.powers.addPowers(i, PWPower.FIRE_BOLT);
+            }
+        }
     }
 
     @Override
     public void handledPower(Player player,Power power) {
+        player.sendSystemMessage(Component.nullToEmpty("entro"));
         power.startPower(player);
+    }
+    @Override
+    public void stopPower(Player player,Power power){
+        power.setCooldownTimer(300);
+        power.stopPower(player);
     }
 
     @Override
@@ -112,7 +131,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
 
     @Override
     public boolean canUsePower() {
-        return false;
+        return this.getSelectPower().cooldownTimer<=0;
     }
 
     @Override
@@ -152,24 +171,35 @@ public class PowerPlayerCapability implements IPowerPlayer {
     }
 
     @Override
-    public void swingHand(InteractionHand hand,Player player) {
-
+    public void swingHand(Player player) {
+        this.getPlayer().sendSystemMessage(Component.nullToEmpty(String.valueOf( "es "+this.level.isClientSide+":"+this.getSelectPower().cooldownTimer)));
+        if(this.canUsePower()){
+            if(this.usingPower==Power.NONE){
+                Power power=this.getSelectPower();
+                this.castingTimer=power.castingDuration;
+                this.setUsingPower(power);
+                this.getPlayer().sendSystemMessage(Component.nullToEmpty("Se lanzo el poder"));
+            }
+        }
     }
 
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag=new CompoundTag();
         this.powers.save(tag);
+        tag.putInt("select_power",this.posSelectPower);
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         this.powers=new Powers(nbt);
+        this.posSelectPower=nbt.getInt("select_power");
     }
 
     public void init(Player player) {
         this.setPlayer(player);
+        this.level=player.level();
     }
 
     public static class PowerPlayerProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {

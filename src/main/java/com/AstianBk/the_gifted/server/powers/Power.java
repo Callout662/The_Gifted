@@ -1,6 +1,6 @@
-package com.AstianBk.Proyect_Power.server.powers;
+package com.AstianBk.the_gifted.server.powers;
 
-import com.AstianBk.Proyect_Power.common.api.IPowerPlayer;
+import com.AstianBk.the_gifted.common.api.IPowerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -26,6 +26,7 @@ public abstract class Power {
     };
     private final String descriptionId;
     public int cooldown;
+    public int cooldownTimer=0;
     public int lauchTime;
     public int castingDuration;
     public ElementPower elementPower;
@@ -52,8 +53,8 @@ public abstract class Power {
         if(this.isContinuousUse()){
             this.effectPowerForTick(player.getPlayer());
         }
-        if(this.cooldown>0){
-            this.cooldown--;
+        if(this.cooldownTimer>0){
+            this.cooldownTimer--;
         }
     }
 
@@ -89,6 +90,9 @@ public abstract class Power {
     public abstract void startPower(Player player);
     public abstract void stopPower(Player player);
 
+    public void setCooldownTimer(int cooldownTimer) {
+        this.cooldownTimer = cooldownTimer;
+    }
 
     public boolean useResources() {
         return false;

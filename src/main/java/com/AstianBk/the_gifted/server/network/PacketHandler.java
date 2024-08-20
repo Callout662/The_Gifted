@@ -1,7 +1,8 @@
-package com.AstianBk.Proyect_Power.server.network;
+package com.AstianBk.the_gifted.server.network;
 
-import com.AstianBk.Proyect_Power.common.ProjectPower;
-import com.AstianBk.Proyect_Power.server.network.message.PacketKeySync;
+import com.AstianBk.the_gifted.common.TheGifted;
+import com.AstianBk.the_gifted.server.network.message.PacketHandlerPower;
+import com.AstianBk.the_gifted.server.network.message.PacketKeySync;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +17,7 @@ public class PacketHandler {
     public static void registerMessages() {
         int index = 0;
         SimpleChannel channel= NetworkRegistry.ChannelBuilder.named(
-                        new ResourceLocation(ProjectPower.MODID, "messages"))
+                        new ResourceLocation(TheGifted.MODID, "messages"))
                 .networkProtocolVersion(()-> PROTOCOL_VERSION)
                 .clientAcceptedVersions(s -> true)
                 .serverAcceptedVersions(s -> true)
@@ -26,6 +27,9 @@ public class PacketHandler {
 
         channel.registerMessage(index++, PacketKeySync.class, PacketKeySync::write,
                 PacketKeySync::new, PacketKeySync::handle);
+
+        channel.registerMessage(index++, PacketHandlerPower.class, PacketHandlerPower::write,
+                PacketHandlerPower::new, PacketHandlerPower::handle);
 
 
     }

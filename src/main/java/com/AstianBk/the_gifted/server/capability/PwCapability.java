@@ -1,4 +1,4 @@
-package com.AstianBk.Proyect_Power.server.capability;
+package com.AstianBk.the_gifted.server.capability;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
