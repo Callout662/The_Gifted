@@ -13,12 +13,13 @@ public interface IPowerPlayer extends INBTSerializable<CompoundTag> {
     Player getPlayer();
     void setPlayer(Player player);
     Power getSelectPower();
+    Power getPowerForHotBar(int pos);
     int getCooldownPower();
     int getCastingTimer();
     int getStartTime();
-    boolean usingPower();
-    Power getUsingPower();
-    void setUsingPower(Power power);
+    boolean lastUsingPower();
+    Power getLastUsingPower();
+    void setLastUsingPower(Power power);
     void tick(Player player);
     void onJoinGame(Player player, EntityJoinLevelEvent event);
     void handledPower(Player player,Power power);

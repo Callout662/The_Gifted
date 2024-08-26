@@ -1,7 +1,6 @@
 package com.AstianBk.the_gifted.server.network;
 
 import com.AstianBk.the_gifted.common.api.IPowerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,7 +31,6 @@ public class Handler {
                 entity.swingHand(entity.getPlayer());
             }
             case 1->{
-                entity.getUsingPower().startPower(entity.getPlayer());
             }
         }
     }

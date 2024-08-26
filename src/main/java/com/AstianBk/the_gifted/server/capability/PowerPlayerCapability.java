@@ -2,15 +2,12 @@ package com.AstianBk.the_gifted.server.capability;
 
 import com.AstianBk.the_gifted.common.api.IPowerPlayer;
 import com.AstianBk.the_gifted.common.register.PWPower;
-import com.AstianBk.the_gifted.server.network.PacketHandler;
-import com.AstianBk.the_gifted.server.network.message.PacketHandlerPower;
 import com.AstianBk.the_gifted.server.powers.Power;
 import com.AstianBk.the_gifted.server.powers.Powers;
 import com.google.common.collect.Maps;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
@@ -25,11 +22,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 public class PowerPlayerCapability implements IPowerPlayer {
-    public Power usingPower=Power.NONE;
+    public Power lastUsingPower =Power.NONE;
     Player player;
     Level level;
-    Powers powers=new Powers(Maps.newHashMap());
+    public Powers powers=new Powers(Maps.newHashMap());
+    public Powers activesPowers=new Powers(Maps.newHashMap());
     Map<Integer,Power> passives= Maps.newHashMap();
+    int lastPosSelectPower=1;
     int posSelectPower=1;
     int castingTimer=0;
     @Override
@@ -37,7 +36,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
         return this.player;
     }
     public static PowerPlayerCapability get(Player player){
-        return PwCapability.getEntityPatch(player,PowerPlayerCapability.class);
+        return PwCapability.getEntityCap(player,PowerPlayerCapability.class);
     }
     @Override
     public void setPlayer(Player player) {
@@ -48,6 +47,11 @@ public class PowerPlayerCapability implements IPowerPlayer {
     public Power getSelectPower() {
         Power power = this.powers.get(this.posSelectPower);
         return power;
+    }
+
+    @Override
+    public Power getPowerForHotBar(int pos) {
+        return this.powers.get(pos);
     }
 
     @Override
@@ -63,22 +67,22 @@ public class PowerPlayerCapability implements IPowerPlayer {
 
     @Override
     public int getStartTime() {
-        return this.getUsingPower().lauchTime;
+        return this.getLastUsingPower().lauchTime;
     }
 
     @Override
-    public boolean usingPower() {
-        return this.getUsingPower()!=Power.NONE;
+    public boolean lastUsingPower() {
+        return this.getLastUsingPower()!=Power.NONE;
     }
 
     @Override
-    public Power getUsingPower() {
-        return this.usingPower;
+    public Power getLastUsingPower() {
+        return this.lastUsingPower;
     }
 
     @Override
-    public void setUsingPower(Power power) {
-        this.usingPower=power;
+    public void setLastUsingPower(Power power) {
+        this.lastUsingPower =power;
     }
 
     @Override
@@ -86,19 +90,30 @@ public class PowerPlayerCapability implements IPowerPlayer {
         if (!this.powers.powers.isEmpty()){
             PowerPlayerCapability cap=PowerPlayerCapability.get(player);
             if(cap!=null){
+                int i=0;
                 for (Power power:this.powers.getPowers()){
-                    power.tick(cap);
+                    power.tickCooldown(cap,i);
+                    i++;
                 }
             }
         }
-        if(this.getUsingPower()!=null && this.usingPower()){
-            if(this.castingTimer==this.getUsingPower().lauchTime){
-                this.handledPower(player,this.getUsingPower());
+        if(!this.activesPowers.powers.isEmpty()){
+            PowerPlayerCapability cap=PowerPlayerCapability.get(player);
+            if(cap!=null){
+                int i=0;
+                for (Power power:this.activesPowers.getPowers()){
+                    power.tick(cap,i);
+                    i++;
+                }
+            }
+        }
+        if(this.getLastUsingPower()!=null && this.lastUsingPower()){
+            if(this.castingTimer==this.getLastUsingPower().lauchTime){
+                this.handledPower(player,this.getLastUsingPower());
             }
             this.castingTimer--;
             if(this.castingTimer==0){
-                this.stopPower(player,this.getUsingPower());
-                this.setUsingPower(Power.NONE);
+                this.stopPower(player,this.getLastUsingPower());
             }
         }
     }
@@ -106,21 +121,20 @@ public class PowerPlayerCapability implements IPowerPlayer {
     public void onJoinGame(Player player, EntityJoinLevelEvent event) {
         PowerPlayerCapability cap=PowerPlayerCapability.get(player);
         if(cap!=null){
-            for (int i=1;i<6;i++){
-                this.powers.addPowers(i, PWPower.FIRE_BOLT);
-            }
+            this.powers.addPowers(1, PWPower.FIRE_BOLT.copy());
+            this.powers.addPowers(2, PWPower.SUPER_SPEED.copy());
+            this.powers.addPowers(3, PWPower.FLY.copy());
         }
     }
 
     @Override
     public void handledPower(Player player,Power power) {
-        player.sendSystemMessage(Component.nullToEmpty("entro"));
         power.startPower(player);
     }
     @Override
     public void stopPower(Player player,Power power){
         power.setCooldownTimer(300);
-        power.stopPower(player);
+        power.stopPower(PowerPlayerCapability.get(player),this.posSelectPower);
     }
 
     @Override
@@ -131,7 +145,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
 
     @Override
     public boolean canUsePower() {
-        return this.getSelectPower().cooldownTimer<=0;
+        return this.getSelectPower().cooldownTimer<=0 && this.castingTimer<=0;
     }
 
     @Override
@@ -158,7 +172,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
     public void upPower() {
         this.posSelectPower=Math.min(this.posSelectPower+1,5);
         if (this.getPlayer()!=null){
-            this.getPlayer().sendSystemMessage(Component.nullToEmpty("Se cambio al"+this.getSelectPower().name));
+            this.getPlayer().sendSystemMessage(Component.nullToEmpty(this.posSelectPower+" Se cambio al"+this.getSelectPower().name));
         }
     }
 
@@ -166,18 +180,21 @@ public class PowerPlayerCapability implements IPowerPlayer {
     public void downPower() {
         this.posSelectPower=Math.max(this.posSelectPower-1,1);
         if (this.getPlayer()!=null){
-            this.getPlayer().sendSystemMessage(Component.nullToEmpty("Se cambio al"+this.getSelectPower().name));
+            this.getPlayer().sendSystemMessage(Component.nullToEmpty(this.posSelectPower+" Se cambio al"+this.getSelectPower().name));
         }
     }
 
     @Override
     public void swingHand(Player player) {
-        this.getPlayer().sendSystemMessage(Component.nullToEmpty(String.valueOf( "es "+this.level.isClientSide+":"+this.getSelectPower().cooldownTimer)));
         if(this.canUsePower()){
-            if(this.usingPower==Power.NONE){
-                Power power=this.getSelectPower();
+            Power power=this.getSelectPower();
+            if(!this.activesPowers.powers.containsValue(power)){
                 this.castingTimer=power.castingDuration;
-                this.setUsingPower(power);
+                power.duration=300+50*power.level;
+                int i=Math.max(this.activesPowers.powers.size()-1,0);
+                this.activesPowers.addPowers(i,power);
+                this.lastPosSelectPower=this.posSelectPower;
+                this.setLastUsingPower(power);
                 this.getPlayer().sendSystemMessage(Component.nullToEmpty("Se lanzo el poder"));
             }
         }

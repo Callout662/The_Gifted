@@ -24,7 +24,6 @@ public class FireBoltPower extends Power{
 
     @Override
     public void startPower(Player player) {
-        player.sendSystemMessage(Component.nullToEmpty(String.valueOf("estado del servidor"+!player.level().isClientSide)));
         if(!player.level().isClientSide){
             player.sendSystemMessage(Component.nullToEmpty("Si quiso lanzar las flechas"));
             player.level().playSound(player,player, SoundEvents.CHICKEN_DEATH, SoundSource.PLAYERS,2.0f,1.0f);
@@ -40,7 +39,9 @@ public class FireBoltPower extends Power{
     }
 
     @Override
-    public void stopPower(Player player) {
-
+    public Power copy() {
+        Power power=new FireBoltPower();
+        power.read(this.tag);
+        return power;
     }
 }

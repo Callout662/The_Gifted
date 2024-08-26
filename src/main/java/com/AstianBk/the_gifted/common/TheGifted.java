@@ -1,6 +1,7 @@
 package com.AstianBk.the_gifted.common;
 
 import com.AstianBk.the_gifted.common.register.PWCreativeTabs;
+import com.AstianBk.the_gifted.common.register.PWEffects;
 import com.AstianBk.the_gifted.common.register.PWItems;
 import com.AstianBk.the_gifted.common.register.PWPower;
 import com.AstianBk.the_gifted.server.network.PacketHandler;
@@ -23,6 +24,7 @@ public class TheGifted
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         PacketHandler.registerMessages();
+        PWEffects.EFFECT.register(modEventBus);
         PWPower.init();
         PWItems.ITEMS.register(modEventBus);
         PWCreativeTabs.TABS.register(modEventBus);

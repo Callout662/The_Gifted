@@ -20,9 +20,8 @@ public class Powers {
             ListTag listTag = tag.getList("powers",10);
             for(int i = 0 ; i<listTag.size() ; i++){
                 CompoundTag tag1=listTag.getCompound(i);
-                String name=tag1.getString("name");
                 int pos=tag1.getInt("pos");
-                Power power = PWPower.getPowerForName(name);
+                Power power = new Power(tag1);
                 this.powers.put(pos, power);
             }
         }
@@ -36,6 +35,7 @@ public class Powers {
                 CompoundTag tag1=new CompoundTag();
                 tag1.putString("name",power.name);
                 tag1.putInt("pos",i);
+                power.save(tag1);
                 listtag.add(tag1);
             }
         }
