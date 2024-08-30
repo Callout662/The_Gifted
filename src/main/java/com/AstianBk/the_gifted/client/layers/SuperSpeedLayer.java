@@ -35,7 +35,7 @@ public class SuperSpeedLayer<T extends Player,M extends EntityModel<T>> extends 
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T player, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         PowerPlayerCapability cap=PowerPlayerCapability.get(player);
         if(cap!=null){
-            if(player.hasEffect(PWEffects.SUPER_SPEED.get())){
+            if(cap.durationEffect.hasDurationForSpell("super_speed")){
                 pMatrixStack.pushPose();
 
                 Vec3 renderingAt = new Vec3(Mth.lerp(pPartialTicks, player.xo, player.getX()), Mth.lerp(pPartialTicks, player.yo, player.getY()), Mth.lerp(pPartialTicks, player.zo, player.getZ()));

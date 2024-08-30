@@ -41,7 +41,7 @@ public class ModBusEvent {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static <T extends LivingEntity,M extends EntityModel<T>> void renderEvent(RenderLivingEvent.Pre<T,M> event){
+    public static <T extends LivingEntity,M extends EntityModel<T>> void renderEvent(RenderLivingEvent.Post<T,M> event){
         if(event.getEntity() instanceof Player player && player.getAbilities().flying){
             Minecraft mc = Minecraft.getInstance();
             EntityRendererProvider.Context context = new EntityRendererProvider.Context(mc.getEntityRenderDispatcher(),
@@ -51,8 +51,8 @@ public class ModBusEvent {
             EntityRenderer<?> renderer= new GeckoPlayerRenderer<>(context,new GeckoPlayerModel(),event.getRenderer().getTextureLocation((T) event.getEntity()),animatable);
             Entity entity = event.getEntity();
             if(renderer instanceof GeckoPlayerRenderer<?,?> geoRenderer  && animatable!=null){
-                event.setCanceled(true);
                 //geoRenderer.setCurrentEntity(event.getEntity());
+                entity.setInvisible(true);
                 geoRenderer.renderGeckoPlayer(entity,animatable,0.0F,event.getPartialTick(),event.getPoseStack(),event.getMultiBufferSource(),event.getPackedLight());
             }
         }

@@ -1,18 +1,16 @@
 package com.AstianBk.the_gifted.server.powers;
 
-import com.AstianBk.the_gifted.common.register.PWEffects;
 import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 public class FlyPower extends Power{
     public FlyPower() {
         super("fly", 10, 300, 1, ElementPower.NORMAL, true, false, true);
+        this.addAttributeModifier(Attributes.MOVEMENT_SPEED,"91AEAA56-376B-4498-935B-2F7F68070635", (double)0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL);
+
     }
 
     @Override
@@ -22,8 +20,8 @@ public class FlyPower extends Power{
     }
 
     @Override
-    public void tick(PowerPlayerCapability player, int pos) {
-        super.tick(player, pos);
+    public void tick(PowerPlayerCapability player) {
+        super.tick(player);
         player.getPlayer().getAbilities().flying=true;
         player.getPlayer().onUpdateAbilities();
 
@@ -34,25 +32,19 @@ public class FlyPower extends Power{
         super.effectPowerForTick(player);
     }
 
-    @Override
-    public Power copy() {
-        Power power=new FlyPower();
-        power.read(this.tag);
-        return power;
-    }
 
     @Override
     public void updateAttributes(Player player) {
-        //this.addAttributeModifiers(player,player.getAttributes(),4);
+        this.addAttributeModifiers(player,player.getAttributes(),4);
     }
 
     @Override
-    public void stopPower(PowerPlayerCapability player, int pos) {
-        super.stopPower(player,pos);
+    public void stopPower(PowerPlayerCapability player) {
+        super.stopPower(player);
         if(!player.getPlayer().isCreative()){
             player.getPlayer().getAbilities().flying=false;
             player.getPlayer().onUpdateAbilities();
         }
-        //this.removeAttributeModifiers(player.getPlayer(),player.getPlayer().getAttributes(),4);
+        this.removeAttributeModifiers(player.getPlayer(),player.getPlayer().getAttributes(),4);
     }
 }

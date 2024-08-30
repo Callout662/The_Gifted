@@ -43,6 +43,7 @@ public class Power {
         this.name=name;
         this.descriptionId= Component.translatable("power."+name).getString();
     }
+
     public Power(CompoundTag tag){
         Power power= PWPower.getPowerForName(tag.getString("name"));
         this.name= power.name;
@@ -57,22 +58,8 @@ public class Power {
         this.read(tag);
     }
 
-    public void tick(PowerPlayerCapability player,int pos){
-        if(this.isContinuousUse()){
-            this.effectPowerForTick(player.getPlayer());
-            if(this.duration>0){
-                this.duration--;
-                if(this.duration==0){
-                    this.stopPower(player,pos);
-                }
-            }
-        }
-
-    }
-    public void tickCooldown(PowerPlayerCapability player, int pos){
-        if(this.cooldownTimer>0){
-            this.cooldownTimer--;
-        }
+    public void tick(PowerPlayerCapability player){
+        this.effectPowerForTick(player.getPlayer());
     }
 
     public ElementPower getElementPower(){
@@ -109,11 +96,10 @@ public class Power {
     public void startPower(Player player) {
 
     }
-    public void stopPower(PowerPlayerCapability player, int pos){
-        System.out.print("\n-Entro-\n");
-        this.setCooldownTimer(300);
-        player.activesPowers.powers.remove(pos,this);
+    public void stopPower(PowerPlayerCapability player){
         player.setLastUsingPower(Power.NONE);
+        player.cooldowns.addCooldown(this,this.cooldown);
+        player.syncPower(player.getPlayer());
     }
 
     public void setCooldownTimer(int cooldownTimer) {
@@ -123,6 +109,7 @@ public class Power {
         if(this.tag==null){
             this.tag=tag;
         }
+        tag.putInt("duration",this.duration);
         tag.putInt("cooldownTimer",this.cooldownTimer);
         return tag;
     }
@@ -131,12 +118,11 @@ public class Power {
         if(tag==null){
             tag=new CompoundTag();
         }
+        this.duration=tag.getInt("duration");
         this.setCooldownTimer(tag.getInt("cooldownTimer"));
         this.tag=tag;
     }
-    public Power copy(){
-        return Power.NONE;
-    }
+
 
     public boolean useResources() {
         return false;
@@ -182,4 +168,8 @@ public class Power {
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return ((Power) obj).name.equals(this.name);
+    }
 }

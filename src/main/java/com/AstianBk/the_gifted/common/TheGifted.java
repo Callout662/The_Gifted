@@ -4,6 +4,7 @@ import com.AstianBk.the_gifted.common.register.PWCreativeTabs;
 import com.AstianBk.the_gifted.common.register.PWEffects;
 import com.AstianBk.the_gifted.common.register.PWItems;
 import com.AstianBk.the_gifted.common.register.PWPower;
+import com.AstianBk.the_gifted.server.capability.PwCapability;
 import com.AstianBk.the_gifted.server.network.PacketHandler;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,6 +25,7 @@ public class TheGifted
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         PacketHandler.registerMessages();
+        modEventBus.addListener(PwCapability::registerCapabilities);
         PWEffects.EFFECT.register(modEventBus);
         PWPower.init();
         PWItems.ITEMS.register(modEventBus);

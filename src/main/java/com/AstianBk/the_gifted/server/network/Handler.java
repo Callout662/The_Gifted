@@ -1,6 +1,8 @@
 package com.AstianBk.the_gifted.server.network;
 
 import com.AstianBk.the_gifted.common.api.IPowerPlayer;
+import com.AstianBk.the_gifted.server.capability.AnimationPlayerCapability;
+import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -25,13 +27,10 @@ public class Handler {
         player.downPower();
     }
 
-    public static void handlerManager(int id, IPowerPlayer entity) {
-        switch (id){
-            case 0->{
-                entity.swingHand(entity.getPlayer());
-            }
-            case 1->{
-            }
-        }
+    public static void handlerManagerAnimation(int id, AnimationPlayerCapability entity) {
+        entity.handledPoseFly(id);
+    }
+    public static void handlerManagerPower(int id, PowerPlayerCapability entity) {
+        entity.activesPowers.get(id).stopPower(entity);
     }
 }

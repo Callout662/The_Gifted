@@ -1,13 +1,16 @@
 package com.AstianBk.the_gifted.server.capability;
 
 import com.AstianBk.the_gifted.common.api.IPowerPlayer;
-import com.AstianBk.the_gifted.common.register.PWPower;
-import com.AstianBk.the_gifted.server.powers.Power;
-import com.AstianBk.the_gifted.server.powers.Powers;
+import com.AstianBk.the_gifted.server.manager.DurationInstance;
+import com.AstianBk.the_gifted.server.manager.PlayerCooldowns;
+import com.AstianBk.the_gifted.server.manager.ActiveEffectDuration;
+import com.AstianBk.the_gifted.server.powers.*;
 import com.google.common.collect.Maps;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
@@ -28,9 +31,10 @@ public class PowerPlayerCapability implements IPowerPlayer {
     public Powers powers=new Powers(Maps.newHashMap());
     public Powers activesPowers=new Powers(Maps.newHashMap());
     Map<Integer,Power> passives= Maps.newHashMap();
-    int lastPosSelectPower=1;
     int posSelectPower=1;
     int castingTimer=0;
+    public PlayerCooldowns cooldowns=new PlayerCooldowns();
+    public ActiveEffectDuration durationEffect;
     @Override
     public Player getPlayer() {
         return this.player;
@@ -87,43 +91,47 @@ public class PowerPlayerCapability implements IPowerPlayer {
 
     @Override
     public void tick(Player player) {
-        if (!this.powers.powers.isEmpty()){
-            PowerPlayerCapability cap=PowerPlayerCapability.get(player);
-            if(cap!=null){
-                int i=0;
-                for (Power power:this.powers.getPowers()){
-                    power.tickCooldown(cap,i);
-                    i++;
-                }
+        if(player instanceof ServerPlayer){
+            if (this.cooldowns.hasCooldownsActive()){
+                this.cooldowns.tick(1);
+            }
+            if(this.durationEffect.hasDurationsActive()){
+                this.durationEffect.tick(1,this);
+            }
+            this.syncPower(player);
+        }else if(this.level.isClientSide){
+            if (this.cooldowns.hasCooldownsActive()){
+                this.cooldowns.tick(1);
+            }
+            if(this.durationEffect.hasDurationsActive()){
+                this.durationEffect.tickDurations();
             }
         }
-        if(!this.activesPowers.powers.isEmpty()){
-            PowerPlayerCapability cap=PowerPlayerCapability.get(player);
-            if(cap!=null){
-                int i=0;
-                for (Power power:this.activesPowers.getPowers()){
-                    power.tick(cap,i);
-                    i++;
+        if(!this.powers.getPowers().isEmpty()){
+            this.powers.getPowers().forEach(e->{
+                if(this.durationEffect.hasDurationForSpell(e.getPower())){
+                    e.getPower().tick(this);
+                    this.durationEffect.decrementDurationCount(e.power);
                 }
-            }
+            });
         }
         if(this.getLastUsingPower()!=null && this.lastUsingPower()){
             if(this.castingTimer==this.getLastUsingPower().lauchTime){
                 this.handledPower(player,this.getLastUsingPower());
             }
             this.castingTimer--;
-            if(this.castingTimer==0){
-                this.stopPower(player,this.getLastUsingPower());
-            }
         }
     }
+
     @Override
     public void onJoinGame(Player player, EntityJoinLevelEvent event) {
         PowerPlayerCapability cap=PowerPlayerCapability.get(player);
         if(cap!=null){
-            this.powers.addPowers(1, PWPower.FIRE_BOLT.copy());
-            this.powers.addPowers(2, PWPower.SUPER_SPEED.copy());
-            this.powers.addPowers(3, PWPower.FLY.copy());
+            this.syncPower(player);
+            this.powers.addPowers(1,new FireBoltPower());
+            this.powers.addPowers(2,new SuperSpeedPower());
+            this.powers.addPowers(3,new FlyPower());
+            this.powers.addPowers(4,new LaserPower());
         }
     }
 
@@ -133,8 +141,6 @@ public class PowerPlayerCapability implements IPowerPlayer {
     }
     @Override
     public void stopPower(Player player,Power power){
-        power.setCooldownTimer(300);
-        power.stopPower(PowerPlayerCapability.get(player),this.posSelectPower);
     }
 
     @Override
@@ -145,7 +151,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
 
     @Override
     public boolean canUsePower() {
-        return this.getSelectPower().cooldownTimer<=0 && this.castingTimer<=0;
+        return this.getSelectPower()!=null && !this.cooldowns.isOnCooldown(this.getSelectPower()) && this.castingTimer<=0;
     }
 
     @Override
@@ -163,14 +169,20 @@ public class PowerPlayerCapability implements IPowerPlayer {
         return this.powers;
     }
 
+    public void syncData(int posSelectPower){
+        this.posSelectPower=posSelectPower;
+    }
     @Override
     public void syncPower(Player player) {
-
+        if(player instanceof ServerPlayer serverPlayer){
+            this.cooldowns.syncToPlayer(serverPlayer);
+            this.durationEffect.syncAllToPlayer();
+        }
     }
 
     @Override
     public void upPower() {
-        this.posSelectPower=Math.min(this.posSelectPower+1,5);
+        this.posSelectPower=Math.min(this.posSelectPower+1,this.powers.powers.size());
         if (this.getPlayer()!=null){
             this.getPlayer().sendSystemMessage(Component.nullToEmpty(this.posSelectPower+" Se cambio al"+this.getSelectPower().name));
         }
@@ -187,16 +199,20 @@ public class PowerPlayerCapability implements IPowerPlayer {
     @Override
     public void swingHand(Player player) {
         if(this.canUsePower()){
-            Power power=this.getSelectPower();
-            if(!this.activesPowers.powers.containsValue(power)){
-                this.castingTimer=power.castingDuration;
-                power.duration=300+50*power.level;
-                int i=Math.max(this.activesPowers.powers.size()-1,0);
-                this.activesPowers.addPowers(i,power);
-                this.lastPosSelectPower=this.posSelectPower;
-                this.setLastUsingPower(power);
+            if(!this.durationEffect.hasDurationForSpell(this.getSelectPower())){
+                Power power=this.getSelectPower();
+                DurationInstance instance=new DurationInstance(power.name,power.level,power.castingDuration+50*power.level,200);
+                this.castingTimer=this.getSelectPower().castingDuration;
+                this.addActiveEffect(instance,player);
+                this.setLastUsingPower(this.getSelectPower());
                 this.getPlayer().sendSystemMessage(Component.nullToEmpty("Se lanzo el poder"));
             }
+        }
+    }
+    public void addActiveEffect(DurationInstance  instance,Player player){
+        this.durationEffect.forceAddDuration(instance);
+        if(player instanceof  ServerPlayer serverPlayer){
+            this.durationEffect.syncToPlayer(instance);
         }
     }
 
@@ -205,6 +221,13 @@ public class PowerPlayerCapability implements IPowerPlayer {
         CompoundTag tag=new CompoundTag();
         this.powers.save(tag);
         tag.putInt("select_power",this.posSelectPower);
+        if(this.cooldowns.hasCooldownsActive()){
+            tag.put("cooldowns",this.cooldowns.saveNBTData());
+        }
+        if(this.durationEffect.hasDurationsActive()){
+            tag.put("activeEffect",this.durationEffect.saveNBTData());
+        }
+
         return tag;
     }
 
@@ -212,12 +235,34 @@ public class PowerPlayerCapability implements IPowerPlayer {
     public void deserializeNBT(CompoundTag nbt) {
         this.powers=new Powers(nbt);
         this.posSelectPower=nbt.getInt("select_power");
+        if(nbt.contains("cooldowns")){
+            ListTag listTag=new ListTag();
+            this.cooldowns.loadNBTData(listTag);
+        }
+        if(nbt.contains("activeEffect")){
+            ListTag listTag=new ListTag();
+            this.durationEffect.loadNBTData(listTag);
+        }
     }
 
     public void init(Player player) {
         this.setPlayer(player);
         this.level=player.level();
+        if(player instanceof ServerPlayer serverPlayer){
+            this.durationEffect=new ActiveEffectDuration(serverPlayer);
+        }
     }
+
+    public PlayerCooldowns getCooldowns() {
+        return this.cooldowns;
+    }
+    public ActiveEffectDuration getActiveEffectDuration(){
+        return this.durationEffect;
+    }
+    public void setActiveEffectDuration(ActiveEffectDuration activeEffectDuration){
+        this.durationEffect=activeEffectDuration;
+    }
+
 
     public static class PowerPlayerProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
 
@@ -238,5 +283,8 @@ public class PowerPlayerCapability implements IPowerPlayer {
         public void deserializeNBT(CompoundTag nbt) {
             instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
         }
+    }
+
+    public record SyncData(int pos) {
     }
 }

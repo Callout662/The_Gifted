@@ -13,6 +13,7 @@ public class PwCapability {
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.register(PowerPlayerCapability.class);
+        event.register(AnimationPlayerCapability.class);
     }
 
     @SuppressWarnings("unchecked")

@@ -1,8 +1,7 @@
 package com.AstianBk.the_gifted.server.network;
 
 import com.AstianBk.the_gifted.common.TheGifted;
-import com.AstianBk.the_gifted.server.network.message.PacketHandlerPower;
-import com.AstianBk.the_gifted.server.network.message.PacketKeySync;
+import com.AstianBk.the_gifted.server.network.message.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,8 +27,34 @@ public class PacketHandler {
         channel.registerMessage(index++, PacketKeySync.class, PacketKeySync::write,
                 PacketKeySync::new, PacketKeySync::handle);
 
-        channel.registerMessage(index++, PacketHandlerPower.class, PacketHandlerPower::write,
-                PacketHandlerPower::new, PacketHandlerPower::handle);
+        channel.registerMessage(index++, PacketHandlerAnimations.class, PacketHandlerAnimations::write,
+                PacketHandlerAnimations::new, PacketHandlerAnimations::handle);
+        channel.registerMessage(index++, PacketHandlerPowers.class, PacketHandlerPowers::write,
+                PacketHandlerPowers::new, PacketHandlerPowers::handle);
+        channel.registerMessage(index++, PacketSyncActivePowers.class, PacketSyncActivePowers::write,
+                PacketSyncActivePowers::new, PacketSyncActivePowers::handle);
+        channel.registerMessage(index++, PacketSyncData.class, PacketSyncData::write,
+                PacketSyncData::new, PacketSyncData::handle);
+        channel.registerMessage(index++,PacketSyncCooldown.class,PacketSyncCooldown::toBytes,
+                PacketSyncCooldown::new,PacketSyncCooldown::handle);
+        channel.messageBuilder(PacketSyncCooldown.class,index++)
+                .encoder(PacketSyncCooldown::toBytes)
+                .decoder(PacketSyncCooldown::new)
+                .consumerNetworkThread(PacketSyncCooldown::handle).add();
+
+        channel.messageBuilder(PacketSyncDurationEffect.class,index++)
+                .encoder(PacketSyncDurationEffect::toBytes)
+                .decoder(PacketSyncDurationEffect::new)
+                .consumerNetworkThread(PacketSyncDurationEffect::handle).add();
+        channel.messageBuilder(PacketRemoveActiveEffect.class,index++)
+                .encoder(PacketRemoveActiveEffect::toBytes)
+                .decoder(PacketRemoveActiveEffect::new)
+                .consumerNetworkThread(PacketRemoveActiveEffect::handle).add();
+        channel.messageBuilder(PacketActiveEffect.class,index++)
+                .encoder(PacketActiveEffect::toBytes)
+                .decoder(PacketActiveEffect::new)
+                .consumerNetworkThread(PacketActiveEffect::handle).add();
+
 
 
     }

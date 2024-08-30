@@ -5,6 +5,9 @@
   "minVersion": "0.8",
   "refmap": "the_gifted.refmap.json",
   "mixins": [
+    "EntityAccessor",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
     "PlayerMixin"
   ],
   "injectors": {

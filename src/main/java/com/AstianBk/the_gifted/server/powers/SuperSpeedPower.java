@@ -1,10 +1,7 @@
 package com.AstianBk.the_gifted.server.powers;
 
-import com.AstianBk.the_gifted.common.register.PWEffects;
 import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -20,14 +17,12 @@ public class SuperSpeedPower extends Power{
 
     @Override
     public void startPower(Player player) {
-        if (!player.level().isClientSide){
-            player.addEffect(new MobEffectInstance(PWEffects.SUPER_SPEED.get(),300+50*this.level,this.level-1));
-        }
+
     }
 
     @Override
-    public void tick(PowerPlayerCapability player, int pos) {
-        super.tick(player, pos);
+    public void tick(PowerPlayerCapability player) {
+        super.tick(player);
         Player player1=player.getPlayer();
         if(player1.isSprinting()){
             this.chargedTime=Math.min(this.chargedTime+2,100);
@@ -58,12 +53,6 @@ public class SuperSpeedPower extends Power{
 
     }
 
-    @Override
-    public Power copy() {
-        Power power=new SuperSpeedPower();
-        power.read(this.tag);
-        return power;
-    }
 
     public double getAttributeModifierValue(int p_19457_, AttributeModifier p_19458_) {
         return p_19458_.getAmount() * (double)(p_19457_ + 1);
@@ -75,8 +64,8 @@ public class SuperSpeedPower extends Power{
     }
 
     @Override
-    public void stopPower(PowerPlayerCapability player, int pos) {
-        super.stopPower(player,pos);
+    public void stopPower(PowerPlayerCapability player) {
+        super.stopPower(player);
         this.removeAttributeModifiers(player.getPlayer(),player.getPlayer().getAttributes(),4);
     }
 }

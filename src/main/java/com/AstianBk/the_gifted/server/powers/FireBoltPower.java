@@ -1,7 +1,5 @@
 package com.AstianBk.the_gifted.server.powers;
 
-import com.AstianBk.the_gifted.server.network.PacketHandler;
-import com.AstianBk.the_gifted.server.network.message.PacketHandlerPower;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -36,12 +34,5 @@ public class FireBoltPower extends Power{
                 player.level().addFreshEntity(arrow);
             }
         }
-    }
-
-    @Override
-    public Power copy() {
-        Power power=new FireBoltPower();
-        power.read(this.tag);
-        return power;
     }
 }
