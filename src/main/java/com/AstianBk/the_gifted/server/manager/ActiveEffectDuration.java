@@ -77,15 +77,15 @@ public class ActiveEffectDuration {
         return !recastLookup.isEmpty();
     }
 
-    public boolean hasDurationForSpell(Power power) {
+    public boolean hasDurationForPower(Power power) {
         return isDurationActive(recastLookup.get(power.name));
     }
 
-    public boolean hasDurationForSpell(String powerId) {
+    public boolean hasDurationForPower(String powerId) {
         return isDurationActive(recastLookup.get(powerId));
     }
 
-    public int getRemainingDurationsForSpell(String powerId) {
+    public int getRemainingDurationsForPower(String powerId) {
         var recastInstance = recastLookup.getOrDefault(powerId, EMPTY);
 
         if (isDurationActive(recastInstance)) {
@@ -95,8 +95,8 @@ public class ActiveEffectDuration {
         return 0;
     }
 
-    public int getRemainingDurationsForSpell(Power power) {
-        return getRemainingDurationsForSpell(power.name);
+    public int getRemainingDurationsForPower(Power power) {
+        return getRemainingDurationsForPower(power.name);
     }
 
     public DurationInstance getDurationInstance(String powerId) {
@@ -193,7 +193,6 @@ public class ActiveEffectDuration {
 
     public void tick(int actualTicks, PowerPlayerCapability powerPlayerCapability) {
         if (serverPlayer != null && serverPlayer.level().getGameTime() % actualTicks == 0) {
-            System.out.print("\n descuenta numero\n");
             recastLookup.values()
                     .stream()
                     .filter(r -> {

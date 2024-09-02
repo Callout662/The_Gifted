@@ -1,13 +1,10 @@
 package com.AstianBk.the_gifted.client.layers;
 
-import com.AstianBk.the_gifted.common.register.PWEffects;
-import com.AstianBk.the_gifted.common.register.PWPower;
 import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,7 +12,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -35,7 +31,7 @@ public class SuperSpeedLayer<T extends Player,M extends EntityModel<T>> extends 
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T player, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
         PowerPlayerCapability cap=PowerPlayerCapability.get(player);
         if(cap!=null){
-            if(cap.durationEffect.hasDurationForSpell("super_speed")){
+            if(cap.durationEffect.hasDurationForPower("super_speed")){
                 pMatrixStack.pushPose();
 
                 Vec3 renderingAt = new Vec3(Mth.lerp(pPartialTicks, player.xo, player.getX()), Mth.lerp(pPartialTicks, player.yo, player.getY()), Mth.lerp(pPartialTicks, player.zo, player.getZ()));

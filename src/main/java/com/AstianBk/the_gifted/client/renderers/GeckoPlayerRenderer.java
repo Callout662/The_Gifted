@@ -4,11 +4,9 @@ import com.AstianBk.the_gifted.common.TheGifted;
 import com.AstianBk.the_gifted.server.capability.AnimationPlayerCapability;
 import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
 import com.AstianBk.the_gifted.server.powers.LaserPower;
-import com.AstianBk.the_gifted.server.powers.Power;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -60,7 +58,7 @@ public class GeckoPlayerRenderer<T extends AnimationPlayerCapability,P extends P
     public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, Player player, float pPartialTicks, float pNetHeadYaw, float pHeadPitch) {
         PowerPlayerCapability cap=PowerPlayerCapability.get(player);
         if(cap!=null){
-            if(cap.durationEffect.hasDurationForSpell("laser")){
+            if(cap.durationEffect.hasDurationForPower("laser")){
                 for(int i=0;i<2;i++){
                     LaserPower power= (LaserPower) cap.powers.getForName("laser");
                     pMatrixStack.pushPose();
@@ -212,7 +210,7 @@ public class GeckoPlayerRenderer<T extends AnimationPlayerCapability,P extends P
                         packedOverlay, red, green, blue, alpha);
             }
         }
-        if(PowerPlayerCapability.get(animatable.getPlayer())!=null && PowerPlayerCapability.get(animatable.getPlayer()).durationEffect.hasDurationForSpell("laser")){
+        if(PowerPlayerCapability.get(animatable.getPlayer())!=null && PowerPlayerCapability.get(animatable.getPlayer()).durationEffect.hasDurationForPower("laser")){
             //render(poseStack,bufferSource, animatable.getPlayer(), partialTick, -netHeadYaw,-headPitch);
         }
         poseStack.translate(0, 0.01f, 0);

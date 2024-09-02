@@ -15,6 +15,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,6 +24,8 @@ import java.util.UUID;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin {
+    @Shadow public abstract boolean canBeSeenAsEnemy();
+
     private static final UUID SLOW_FALLING_ID = UUID.fromString("A5B6CF2A-2F7C-31EF-9022-7C3E7D5E6ABA");
     private static final AttributeModifier SLOW_FALLING = new AttributeModifier(SLOW_FALLING_ID, "Slow falling acceleration reduction", -0.07, AttributeModifier.Operation.ADDITION); // Add -0.07 to 0.08 so we get the vanilla default of 0.01
 
@@ -30,7 +33,7 @@ public abstract class PlayerMixin {
     public void travelInject(Vec3 p_21280_, CallbackInfo ci){
         if(((Object)this) instanceof Player player){
             PowerPlayerCapability cap=PowerPlayerCapability.get(player);
-            if(cap!=null && player.getAbilities().flying){
+            if(cap!=null && cap.durationEffect.hasDurationForPower("fly")){
                 ci.cancel();
                 float f = player.xxa * 0.5F;
                 float f1 = player.zza;

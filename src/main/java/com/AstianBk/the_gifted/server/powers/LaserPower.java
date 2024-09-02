@@ -28,22 +28,23 @@ public class LaserPower extends Power{
         var hitResult = raycastForEntity(player.level(), player, 30, true, 0.15f);
         if(hitResult.getType()== HitResult.Type.ENTITY){
             Entity entity =((EntityHitResult)hitResult).getEntity();
-            if(entity.hurt(entity.damageSources().playerAttack(player),5.0F)){
+            if(entity.hurt(entity.damageSources().playerAttack(player),10.0F)){
                 entity.setSecondsOnFire(3);
             }
+            this.start=player.getEyePosition();
             this.end=hitResult.getLocation();
         }
     }
 
 
-    public HitResult raycastForEntity(Level level, Entity originEntity, float distance, boolean checkForBlocks, float bbInflation) {
+    public static HitResult raycastForEntity(Level level, Entity originEntity, float distance, boolean checkForBlocks, float bbInflation) {
         Vec3 start = originEntity.getEyePosition();
         Vec3 end = originEntity.getLookAngle().normalize().scale(distance).add(start);
 
         return internalRaycastForEntity(level, originEntity, start, end, checkForBlocks, bbInflation);
     }
 
-    private HitResult internalRaycastForEntity(Level level, Entity originEntity, Vec3 start, Vec3 end, boolean checkForBlocks, float bbInflation) {
+    private static HitResult internalRaycastForEntity(Level level, Entity originEntity, Vec3 start, Vec3 end, boolean checkForBlocks, float bbInflation) {
         BlockHitResult blockHitResult = null;
         if (checkForBlocks) {
             blockHitResult = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, originEntity));
@@ -60,7 +61,6 @@ public class LaserPower extends Power{
             if (hit.getType() != HitResult.Type.MISS)
                 hits.add(hit);
         }
-        this.start=start;
 
         if (!hits.isEmpty()) {
             hits.sort((o1, o2) -> o1.getLocation().distanceToSqr(start) < o2.getLocation().distanceToSqr(start) ? -1 : 1);
@@ -70,7 +70,7 @@ public class LaserPower extends Power{
         }
         return BlockHitResult.miss(end, Direction.UP, BlockPos.containing(end));
     }
-    public HitResult checkEntityIntersecting(Entity entity, Vec3 start, Vec3 end, float bbInflation) {
+    public static HitResult checkEntityIntersecting(Entity entity, Vec3 start, Vec3 end, float bbInflation) {
         Vec3 hitPos = null;
         if (entity.isMultipartEntity()) {
             for (PartEntity p : entity.getParts()) {

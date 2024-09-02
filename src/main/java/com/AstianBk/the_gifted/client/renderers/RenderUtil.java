@@ -1,61 +1,42 @@
-package com.AstianBk.the_gifted.client.layers;
+package com.AstianBk.the_gifted.client.renderers;
 
 import com.AstianBk.the_gifted.common.TheGifted;
-import com.AstianBk.the_gifted.common.register.PWEffects;
 import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
 import com.AstianBk.the_gifted.server.powers.LaserPower;
-import com.AstianBk.the_gifted.server.powers.Power;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
+public class RenderUtil {
 
-@OnlyIn(Dist.CLIENT)
-public class LaserLayer<T extends Player,M extends EntityModel<T>> extends RenderLayer<T,M>{
     private static final ResourceLocation GUARDIAN_BEAM_LOCATION = new ResourceLocation(TheGifted.MODID,"textures/entity/beacon_beam.png");
-    private static final RenderType BEAM_RENDER_TYPE = RenderType.entityTranslucent(GUARDIAN_BEAM_LOCATION,true);
+    private static final RenderType BEAM_RENDER_TYPE = RenderType.entityTranslucentEmissive(GUARDIAN_BEAM_LOCATION,true);
     private static final ResourceLocation RAY = new ResourceLocation(TheGifted.MODID,"textures/entity/ray.png");
 
 
-    public LaserLayer(RenderLayerParent<T, M> pRenderer) {
-        super(pRenderer);
-    }
-    @Override
-    public  void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, T player, float pLimbSwing, float pLimbSwingAmount, float pPartialTicks, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
-        render(pMatrixStack,pBuffer,player,pPartialTicks,pNetHeadYaw, pHeadPitch);
-    }
-
-
-    public static void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, Player player, float pPartialTicks,float pNetHeadYaw, float pHeadPitch) {
+    public static void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, Player player, float pPartialTicks) {
         PowerPlayerCapability cap=PowerPlayerCapability.get(player);
         if(cap!=null){
             if(cap.durationEffect.hasDurationForPower("laser")){
                 for(int i=0;i<2;i++){
                     pMatrixStack.pushPose();
-                    Vec3 vec32 = calculateViewVector(pHeadPitch,-pNetHeadYaw).reverse();
+                    pMatrixStack.translate(0.0F,player.getEyeHeight()+0.15F,0.0F);
+                    float f1 = (float)player.level().getDayTime() + pPartialTicks;
+                    Vec3 vec32 = player.getLookAngle();
                     vec32 = vec32.normalize();
                     int j = 255;
                     int k = 0;
                     int l = 0;
-                    float f5 = (float)Math.sin(vec32.y);
+                    float f5 = (float)Math.atan2(vec32.y, vec32.x*vec32.x+vec32.z*vec32.z);
                     float f6 = (float)Math.atan2(vec32.z, vec32.x);
 
                     Vec3 start = Vec3.ZERO;
@@ -63,13 +44,14 @@ public class LaserLayer<T extends Player,M extends EntityModel<T>> extends Rende
                     var hit = LaserPower.raycastForEntity(player.level(),player,10.0F,true,0);
                     float distance = (float) player.getEyePosition(pPartialTicks).distanceTo(hit.getLocation());
                     float radius = 0.12f;
-                    pMatrixStack.mulPose(Axis.YP.rotation((f6)));
-                    pMatrixStack.mulPose(Axis.XP.rotation((f5)));
-                    pMatrixStack.translate(i==0 ? 0.08F : -0.08F,0.0F,0.0F);
+                    pMatrixStack.mulPose(Axis.YP.rotation(-(f6 - 1.5707f)));
+                    pMatrixStack.mulPose(Axis.XP.rotation(-(f5)));
+                    pMatrixStack.translate(i==0 ? 0.08F : -0.08F,0.0F,0.2F);
                     float deltaTicks = player.tickCount + pPartialTicks;
                     float deltaUV = -deltaTicks % 10;
                     float max = Mth.frac(deltaUV * 0.2F - (float) Mth.floor(deltaUV * 0.1F));
                     float min = -1.0F + max;
+                    VertexConsumer vertexconsumer = pBuffer.getBuffer(BEAM_RENDER_TYPE);
                     PoseStack.Pose posestack$pose = pMatrixStack.last();
 
                     for (int i1 = 1; i1 <= distance; i1++) {
@@ -78,7 +60,6 @@ public class LaserLayer<T extends Player,M extends EntityModel<T>> extends Rende
                                 Mth.sin(deltaTicks * .8f + 100) * .02f,
                                 Mth.cos(deltaTicks * .8f) * .02f
                         );
-                        VertexConsumer vertexconsumer = pBuffer.getBuffer(BEAM_RENDER_TYPE);
                         end = new Vec3(0, 0, Math.min(i1, distance)).add(wiggle);
                         drawHull(start, end, radius, radius, posestack$pose, vertexconsumer, j, k, l, 127, min, max);
                         VertexConsumer outer = pBuffer.getBuffer(RenderType.entityTranslucent(RAY));
@@ -118,13 +99,5 @@ public class LaserLayer<T extends Player,M extends EntityModel<T>> extends Rende
         consumer.vertex(poseMatrix, (float) to.x - halfWidth, (float) to.y - halfHeight, (float) to.z).color(r, g, b, a).uv(0f, uvMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(240).normal(normalMatrix, 0f, 1f, 0f).endVertex();
 
     }
-    protected static Vec3 calculateViewVector(float p_20172_, float p_20173_) {
-        float f = p_20172_ * ((float)Math.PI / 180F);
-        float f1 = -p_20173_ * ((float)Math.PI / 180F);
-        float f2 = Mth.cos(f1);
-        float f3 = Mth.sin(f1);
-        float f4 = Mth.cos(f);
-        float f5 = Mth.sin(f);
-        return new Vec3((double)(f3 * f4), (double)(-f5), (double)(f2 * f4));
-    }
+
 }

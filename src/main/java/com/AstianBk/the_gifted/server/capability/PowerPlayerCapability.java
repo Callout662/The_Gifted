@@ -109,7 +109,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
         }
         if(!this.powers.getPowers().isEmpty()){
             this.powers.getPowers().forEach(e->{
-                if(this.durationEffect.hasDurationForSpell(e.getPower())){
+                if(this.durationEffect.hasDurationForPower(e.getPower())){
                     e.getPower().tick(this);
                     this.durationEffect.decrementDurationCount(e.power);
                 }
@@ -199,7 +199,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
     @Override
     public void swingHand(Player player) {
         if(this.canUsePower()){
-            if(!this.durationEffect.hasDurationForSpell(this.getSelectPower())){
+            if(!this.durationEffect.hasDurationForPower(this.getSelectPower())){
                 Power power=this.getSelectPower();
                 DurationInstance instance=new DurationInstance(power.name,power.level,power.castingDuration+50*power.level,200);
                 this.castingTimer=this.getSelectPower().castingDuration;
