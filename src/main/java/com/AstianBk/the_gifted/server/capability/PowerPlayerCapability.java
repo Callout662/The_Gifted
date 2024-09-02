@@ -1,5 +1,6 @@
 package com.AstianBk.the_gifted.server.capability;
 
+import com.AstianBk.the_gifted.common.api.ILimbsLose;
 import com.AstianBk.the_gifted.common.api.IPowerPlayer;
 import com.AstianBk.the_gifted.server.manager.DurationInstance;
 import com.AstianBk.the_gifted.server.manager.PlayerCooldowns;
@@ -112,6 +113,8 @@ public class PowerPlayerCapability implements IPowerPlayer {
                 if(this.durationEffect.hasDurationForPower(e.getPower())){
                     e.getPower().tick(this);
                     this.durationEffect.decrementDurationCount(e.power);
+                }else if(e.power.isPassive){
+                    e.power.effectPassiveForTick(player);
                 }
             });
         }
@@ -132,6 +135,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
             this.powers.addPowers(2,new SuperSpeedPower());
             this.powers.addPowers(3,new FlyPower());
             this.powers.addPowers(4,new LaserPower());
+            this.powers.addPowers(5,new SuperRegeneration());
         }
     }
 
@@ -199,7 +203,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
     @Override
     public void swingHand(Player player) {
         if(this.canUsePower()){
-            if(!this.durationEffect.hasDurationForPower(this.getSelectPower())){
+            if(!this.durationEffect.hasDurationForPower(this.getSelectPower()) && !this.getSelectPower().isPassive){
                 Power power=this.getSelectPower();
                 DurationInstance instance=new DurationInstance(power.name,power.level,power.castingDuration+50*power.level,200);
                 this.castingTimer=this.getSelectPower().castingDuration;
@@ -243,6 +247,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
             ListTag listTag=new ListTag();
             this.durationEffect.loadNBTData(listTag);
         }
+
     }
 
     public void init(Player player) {

@@ -4,6 +4,7 @@ import com.AstianBk.the_gifted.client.models.GeckoPlayerModel;
 import com.AstianBk.the_gifted.client.renderers.GeckoPlayerRenderer;
 import com.AstianBk.the_gifted.client.renderers.RenderUtil;
 import com.AstianBk.the_gifted.server.capability.AnimationPlayerCapability;
+import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
 import com.AstianBk.the_gifted.server.capability.PwCapability;
 import com.AstianBk.the_gifted.server.powers.LaserPower;
 import net.minecraft.client.Minecraft;
@@ -31,7 +32,7 @@ public class ModEventClient {
         if(event.getEntity() instanceof Player player){
             RenderUtil.render(event.getPoseStack(),event.getMultiBufferSource(),player,event.getPartialTick());
         }
-        if(event.getEntity() instanceof Player player && player.getAbilities().flying){
+        if(event.getEntity() instanceof Player player && PowerPlayerCapability.get(player).durationEffect.hasDurationForPower("fly")){
             Minecraft mc = Minecraft.getInstance();
             EntityRendererProvider.Context context = new EntityRendererProvider.Context(mc.getEntityRenderDispatcher(),
                     mc.getItemRenderer(),mc.getBlockRenderer(),mc.gameRenderer.itemInHandRenderer,
@@ -56,7 +57,7 @@ public class ModEventClient {
                         getRandomScaled(.2f),
                         getRandomScaled(.2f)
                 );
-                event.player.level().addParticle(ParticleTypes.SMOKE, impact.x + motion.x, impact.y + motion.y, impact.z + motion.z, motion.x, motion.y, motion.z);
+                event.player.level().addParticle(ParticleTypes.SMOKE, impact.x + motion.x, impact.y + motion.y, impact.z + motion.z, 0.0F, motion.y, 0.0f);
             }
         }
     }

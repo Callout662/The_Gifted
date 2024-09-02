@@ -1,6 +1,5 @@
 package com.AstianBk.the_gifted.client;
 
-import com.AstianBk.the_gifted.client.layers.LaserLayer;
 import com.AstianBk.the_gifted.client.layers.SuperSpeedLayer;
 import com.AstianBk.the_gifted.common.TheGifted;
 import com.AstianBk.the_gifted.common.gui.HotBarGui;

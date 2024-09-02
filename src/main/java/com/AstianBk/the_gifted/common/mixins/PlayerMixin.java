@@ -1,5 +1,7 @@
 package com.AstianBk.the_gifted.common.mixins;
 
+import com.AstianBk.the_gifted.common.api.ILimbsLose;
+import com.AstianBk.the_gifted.common.api.Limbs;
 import com.AstianBk.the_gifted.server.capability.PowerPlayerCapability;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
@@ -20,10 +22,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin {
+public abstract class PlayerMixin implements ILimbsLose {
+    public List<Limbs> limbs=new ArrayList<>();
     @Shadow public abstract boolean canBeSeenAsEnemy();
 
     private static final UUID SLOW_FALLING_ID = UUID.fromString("A5B6CF2A-2F7C-31EF-9022-7C3E7D5E6ABA");
@@ -196,5 +201,20 @@ public abstract class PlayerMixin {
         }
 
         player.calculateEntityAnimation(player instanceof FlyingAnimal);
+    }
+
+    @Override
+    public List<Limbs> getLimbsLose() {
+        return this.limbs;
+    }
+
+    @Override
+    public void setLimbsLose(List<Limbs> limbs) {
+        this.limbs=limbs;
+    }
+
+    @Override
+    public void addLimbsLose(Limbs limbs) {
+        this.limbs.add(limbs);
     }
 }

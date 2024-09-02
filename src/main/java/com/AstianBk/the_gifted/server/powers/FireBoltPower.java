@@ -12,7 +12,7 @@ import java.util.List;
 
 public class FireBoltPower extends Power{
     public FireBoltPower() {
-        super("fire_bolt", 20, 400, 20, ElementPower.FIRE, true, false, false);
+        super("fire_bolt", 20, 400, 20, ElementPower.FIRE, true, false, false,false);
     }
 
     @Override

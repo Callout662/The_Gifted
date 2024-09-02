@@ -15,7 +15,7 @@ import java.util.UUID;
 
 
 public class Power {
-    public static Power NONE = new Power("",0, 0, 0, null, false, false, false);
+    public static Power NONE = new Power("",0, 0, 0, null, false, false, false,false);
     private final String descriptionId;
     public int cooldown;
     public int duration;
@@ -25,13 +25,14 @@ public class Power {
     public ElementPower elementPower;
     public boolean instantUse;
     public boolean isTransform;
+    public boolean isPassive;
     public boolean continuousUse;
     public int level;
     public String name;
     public CompoundTag tag;
     public Map<Attribute, AttributeModifier> attributeModifierMap= Maps.newHashMap();
     public Power(String name,int castingDuration,int cooldown,int lauchTime,@Nullable ElementPower elementPower,
-                 boolean instantUse,boolean isTransform,boolean continuousUse){
+                 boolean instantUse,boolean isTransform,boolean continuousUse,boolean isPassive){
         this.castingDuration=castingDuration;
         this.cooldown=cooldown;
         this.lauchTime =lauchTime;
@@ -41,6 +42,7 @@ public class Power {
         this.continuousUse=continuousUse;
         this.level=1;
         this.name=name;
+        this.isPassive=isPassive;
         this.descriptionId= Component.translatable("power."+name).getString();
     }
 
@@ -55,6 +57,7 @@ public class Power {
         this.isTransform= power.isTransform;
         this.continuousUse= power.continuousUse;
         this.descriptionId=power.descriptionId;
+        this.isPassive=power.isPassive;
         this.read(tag);
     }
 
@@ -70,7 +73,7 @@ public class Power {
         this.updateAttributes(player);
     }
 
-    public void effectPassiveForTick() {
+    public void effectPassiveForTick(Player player) {
 
     }
 

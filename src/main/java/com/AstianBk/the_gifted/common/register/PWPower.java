@@ -18,11 +18,14 @@ public class PWPower {
     public static FlyPower FLY=new FlyPower();
     public static LaserPower LASER=new LaserPower();
 
+    public static SuperRegeneration SUPER_REGENERATION=new SuperRegeneration();
+
     public static void init(){
         register(new ResourceLocation(TheGifted.MODID,"fire_bolt"),FIRE_BOLT);
         register(new ResourceLocation(TheGifted.MODID,"super_speed"), SUPER_SPEED);
         register(new ResourceLocation(TheGifted.MODID,"fly"),FLY);
         register(new ResourceLocation(TheGifted.MODID,"laser"),LASER);
+        register(new ResourceLocation(TheGifted.MODID,"super_regeneration"),SUPER_REGENERATION);
     }
 
     public static Power getPowerForName(String name){

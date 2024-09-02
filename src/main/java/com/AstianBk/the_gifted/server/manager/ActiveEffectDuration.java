@@ -39,11 +39,11 @@ public class ActiveEffectDuration {
         this.serverPlayer = null;
     }
 
-    public boolean addDuration(DurationInstance recastInstance, PowerPlayerCapability magicData) {
+    public boolean addDuration(DurationInstance recastInstance, PowerPlayerCapability powerCap) {
         var existingDurationInstance = recastLookup.get(recastInstance.powerId);
 
         if (!isDurationActive(existingDurationInstance)) {
-            magicData.getCooldowns().removeCooldown(recastInstance.powerId);
+            powerCap.getCooldowns().removeCooldown(recastInstance.powerId);
             recastLookup.put(recastInstance.powerId, recastInstance);
             syncToPlayer(recastInstance);
             return true;
@@ -112,7 +112,6 @@ public class ActiveEffectDuration {
     }
 
     public void decrementDurationCount(String powerId) {
-        //IronsSpellbooks.LOGGER.debug("PlayerDurations: {} {}", serverPlayer, powerId);
         var recastInstance = recastLookup.get(powerId);
 
         if (isDurationActive(recastInstance)) {
@@ -184,8 +183,6 @@ public class ActiveEffectDuration {
                 recastInstance.deserializeNBT((CompoundTag) tag);
                 if (recastInstance.remainingDuration > 0 && recastInstance.remainingTicks > 0) {
                     recastLookup.put(recastInstance.powerId, recastInstance);
-                } else {
-                    //cull anything leftover not removed. shouldn't get here
                 }
             });
         }

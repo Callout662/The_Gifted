@@ -34,7 +34,7 @@ public class GeckoPlayerModel<T extends GeoEntity> extends GeoModel<T> {
         GeoBone head = (GeoBone) this.getAnimationProcessor().getBone("Head");
         EntityModelData data=animationState.getData(DataTickets.ENTITY_MODEL_DATA);
         Player player= (Player) animationState.getData(DataTickets.ENTITY);
-        if(PowerPlayerCapability.get(player)!=null && PowerPlayerCapability.get(player).durationEffect.hasDurationForPower("super_speed") && player.isSprinting()){
+        if(PowerPlayerCapability.get(player)!=null && PowerPlayerCapability.get(player).durationEffect.hasDurationForPower("fly") && player.isSprinting()){
             main.setPosY(20);
             main.setRotX((-90.0F+data.headPitch()) * ((float) Math.PI / 180F));
         }
