@@ -3,6 +3,7 @@ package com.AstianBk.the_gifted.server.capability;
 import com.AstianBk.the_gifted.common.api.ILimbsLose;
 import com.AstianBk.the_gifted.common.api.IPowerPlayer;
 import com.AstianBk.the_gifted.server.manager.DurationInstance;
+import com.AstianBk.the_gifted.server.manager.LimbsPartRegeneration;
 import com.AstianBk.the_gifted.server.manager.PlayerCooldowns;
 import com.AstianBk.the_gifted.server.manager.ActiveEffectDuration;
 import com.AstianBk.the_gifted.server.powers.*;
@@ -31,6 +32,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
     Level level;
     public Powers powers=new Powers(Maps.newHashMap());
     public Powers activesPowers=new Powers(Maps.newHashMap());
+    public LimbsPartRegeneration limbsPartRegeneration;
     Map<Integer,Power> passives= Maps.newHashMap();
     int posSelectPower=1;
     int castingTimer=0;
@@ -181,7 +183,16 @@ public class PowerPlayerCapability implements IPowerPlayer {
         if(player instanceof ServerPlayer serverPlayer){
             this.cooldowns.syncToPlayer(serverPlayer);
             this.durationEffect.syncAllToPlayer();
+            this.limbsPartRegeneration.syncPlayer();
         }
+    }
+
+    public ActiveEffectDuration getDurationEffect() {
+        return durationEffect;
+    }
+
+    public LimbsPartRegeneration getLimbsPartRegeneration() {
+        return limbsPartRegeneration;
     }
 
     @Override
@@ -255,6 +266,7 @@ public class PowerPlayerCapability implements IPowerPlayer {
         this.level=player.level();
         if(player instanceof ServerPlayer serverPlayer){
             this.durationEffect=new ActiveEffectDuration(serverPlayer);
+            this.limbsPartRegeneration=new LimbsPartRegeneration(serverPlayer);
         }
     }
 
@@ -266,6 +278,9 @@ public class PowerPlayerCapability implements IPowerPlayer {
     }
     public void setActiveEffectDuration(ActiveEffectDuration activeEffectDuration){
         this.durationEffect=activeEffectDuration;
+    }
+    public void setLimbsPartRegeneration(LimbsPartRegeneration limbsPartRegeneration){
+        this.limbsPartRegeneration=limbsPartRegeneration;
     }
 
 

@@ -65,7 +65,7 @@ public class SuperSpeedPower extends Power{
 
     @Override
     public void stopPower(PowerPlayerCapability player) {
-        super.stopPower(player);
         this.removeAttributeModifiers(player.getPlayer(),player.getPlayer().getAttributes(),4);
+        super.stopPower(player);
     }
 }

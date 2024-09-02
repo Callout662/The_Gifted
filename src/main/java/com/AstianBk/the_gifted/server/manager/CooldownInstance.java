@@ -2,15 +2,15 @@ package com.AstianBk.the_gifted.server.manager;
 
 public class CooldownInstance {
     private int cooldownRemaining;
-    private final int spellCooldown;
+    private final int powerCooldown;
 
-    public CooldownInstance(int spellCooldown) {
-        this.spellCooldown = spellCooldown;
-        this.cooldownRemaining = spellCooldown;
+    public CooldownInstance(int powerCooldown) {
+        this.powerCooldown = powerCooldown;
+        this.cooldownRemaining = powerCooldown;
     }
 
-    public CooldownInstance(int spellCooldown, int cooldownRemaining) {
-        this.spellCooldown = spellCooldown;
+    public CooldownInstance(int powerCooldown, int cooldownRemaining) {
+        this.powerCooldown = powerCooldown;
         this.cooldownRemaining = cooldownRemaining;
     }
 
@@ -27,7 +27,7 @@ public class CooldownInstance {
     }
 
     public int getPowerCooldown() {
-        return spellCooldown;
+        return powerCooldown;
     }
 
     public float getCooldownPercent() {
@@ -35,6 +35,6 @@ public class CooldownInstance {
             return 0;
         }
 
-        return cooldownRemaining / (float) spellCooldown;
+        return cooldownRemaining / (float) powerCooldown;
     }
 }

@@ -54,7 +54,6 @@ public class PacketSyncCooldown {
             var cooldowns = cap.getCooldowns();
             cooldowns.clearCooldowns();
             this.powerCooldowns.forEach((k, v) -> {
-                //irons_powerbooks.LOGGER.debug("ClientboundSyncCooldowns {} {} {}", k, v.getPowerCooldown(), v.getCooldownRemaining());
                 cooldowns.addCooldown(k, v.getPowerCooldown(), v.getCooldownRemaining());
             });
         });
