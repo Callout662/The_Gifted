@@ -3,6 +3,7 @@ package com.AstianBk.the_gifted.common;
 import com.AstianBk.the_gifted.common.keybind.BKKeybinds;
 import com.AstianBk.the_gifted.server.network.PacketHandler;
 import com.AstianBk.the_gifted.server.network.message.PacketKeySync;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,14 +22,16 @@ public class InputEvents {
     public static void onMouseClick(InputEvent.MouseButton event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
-        onInput(mc, event.getButton(), event.getAction());
+        else if (mc.screen == null && event.getButton()==1) {
+            PacketHandler.sendToServer(new PacketKeySync(event.getButton(),event.getAction()));
+        }
     }
 
     private static void onInput(Minecraft mc, int key, int action) {
         if (mc.screen == null && BKKeybinds.attackKey1.consumeClick()) {
-            PacketHandler.sendToServer(new PacketKeySync(key));
+            PacketHandler.sendToServer(new PacketKeySync(key,action));
         }else if (mc.screen == null && BKKeybinds.attackKey2.consumeClick()) {
-            PacketHandler.sendToServer(new PacketKeySync(key));
+            PacketHandler.sendToServer(new PacketKeySync(key,action));
         }
     }
 }

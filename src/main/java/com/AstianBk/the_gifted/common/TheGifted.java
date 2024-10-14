@@ -1,5 +1,6 @@
 package com.AstianBk.the_gifted.common;
 
+import com.AstianBk.the_gifted.client.particle.PWParticles;
 import com.AstianBk.the_gifted.common.register.PWCreativeTabs;
 import com.AstianBk.the_gifted.common.register.PWEffects;
 import com.AstianBk.the_gifted.common.register.PWItems;
@@ -19,16 +20,18 @@ import org.slf4j.Logger;
 public class TheGifted
 {
     public static final String MODID = "the_gifted";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public TheGifted()
     {
+
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         PacketHandler.registerMessages();
         modEventBus.addListener(PwCapability::registerCapabilities);
         PWEffects.EFFECT.register(modEventBus);
         PWPower.init();
         PWItems.ITEMS.register(modEventBus);
+        PWParticles.register(modEventBus);
         PWCreativeTabs.TABS.register(modEventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

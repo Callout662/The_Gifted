@@ -23,7 +23,6 @@ public class FireBoltPower extends Power{
     @Override
     public void startPower(Player player) {
         if(!player.level().isClientSide){
-            player.sendSystemMessage(Component.nullToEmpty("Si quiso lanzar las flechas"));
             player.level().playSound(player,player, SoundEvents.CHICKEN_DEATH, SoundSource.PLAYERS,2.0f,1.0f);
             List<LivingEntity> livings=player.level().getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(10.0d),e->e!=player);
             for (LivingEntity living: livings){

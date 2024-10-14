@@ -47,17 +47,16 @@ public class PacketSyncLimbRegeneration {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
-        ctx.enqueueWork(() -> {
-            Minecraft minecraft =Minecraft.getInstance();
-            Player player= minecraft.player;
-            PowerPlayerCapability cap = PowerPlayerCapability.get(player);
-            var cooldowns = cap.getLimbsPartRegeneration();
-            cooldowns.clearLimbs();
-            this.regenerationLimbs.forEach((k, v) -> {
-                cooldowns.addLoseLimb(k, v.getRegerationTimer(), v.getRegerationTimerRemaining());
-            });
-            cap.setLimbsPartRegeneration(new LimbsPartRegeneration(this.regenerationLimbs));
-        });
+        ctx.enqueueWork(this::sync);
         return true;
     }
+
+    public void sync(){
+        Minecraft minecraft =Minecraft.getInstance();
+        Player player= minecraft.player;
+        PowerPlayerCapability cap = PowerPlayerCapability.get(player);
+        assert cap!=null;
+        cap.setLimbsPartRegeneration(new LimbsPartRegeneration(this.regenerationLimbs));
+    }
+
 }

@@ -87,7 +87,12 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 
 }
 
@@ -95,7 +100,6 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.4")
-
 }
 
 tasks.named('processResources', ProcessResources).configure {

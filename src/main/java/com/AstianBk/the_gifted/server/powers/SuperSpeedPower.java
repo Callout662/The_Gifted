@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 public class SuperSpeedPower extends Power{
     public int chargedTime=0;
     public SuperSpeedPower() {
-        super("super_speed", 10, 300, 1, ElementPower.NORMAL, true, false, true,false);
+        super("super_speed", 300, 100, 1, ElementPower.NORMAL, true, true, false,false);
         this.addAttributeModifier(Attributes.MOVEMENT_SPEED,"91AEAA56-376B-4498-935B-2F7F68070635", (double)0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 

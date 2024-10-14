@@ -24,11 +24,11 @@ public class DurationInstance implements  INBTSerializable<CompoundTag> {
         this.remainingTicks = ticksToLive;
     }
 
-    public String getSpellId() {
+    public String getPowerId() {
         return powerId;
     }
 
-    public int getSpellLevel() {
+    public int getPowerLevel() {
         return powerLevel;
     }
 

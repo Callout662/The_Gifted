@@ -146,12 +146,16 @@ public class ActiveEffectDuration {
 
     public void syncRemoveToPlayer(String powerId) {
         if (serverPlayer != null) {
-            PacketHandler.sendToPlayer(new PacketRemoveActiveEffect(powerId), serverPlayer);
+            PacketHandler.sendToPlayer(new PacketRemoveActiveEffect(powerId,0), serverPlayer);
         }
     }
 
     private void removeDuration(DurationInstance recastInstance, DurationResult recastResult, boolean doSync) {
         recastLookup.remove(recastInstance.powerId);
+        PowerPlayerCapability capability=PowerPlayerCapability.get(this.serverPlayer);
+        if (capability!=null){
+            capability.stopPower(capability.getHotBarPower().getForName(recastInstance.powerId));
+        }
         if (doSync) {
             syncRemoveToPlayer(recastInstance.powerId);
         }
@@ -200,7 +204,7 @@ public class ActiveEffectDuration {
                     .forEach(recastInstance ->{
                         removeDuration(recastInstance, DurationResult.TIMEOUT);
                         powerPlayerCapability.powers.getPowers().forEach(e->{
-                            if(Objects.equals(e.getPower().name, recastInstance.getSpellId())){
+                            if(Objects.equals(e.getPower().name, recastInstance.getPowerId())){
                                 e.getPower().stopPower(powerPlayerCapability);
                             }
                         });

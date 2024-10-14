@@ -35,6 +35,5 @@ public class PWPower {
 
     public static Power getPowerForLocation(ResourceLocation resourceLocation){
         return POWERS.get(resourceLocation)!=null ? POWERS.get(resourceLocation) : Power.NONE;
-
     }
 }

@@ -5,6 +5,8 @@ import com.AstianBk.the_gifted.server.manager.ActiveEffectDuration;
 import com.AstianBk.the_gifted.server.manager.DurationInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Map;
@@ -45,12 +47,14 @@ public class PacketSyncDurationEffect {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
-        ctx.enqueueWork(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            PowerPlayerCapability cap = PowerPlayerCapability.get(mc.player);
-            assert cap!=null;
-            cap.setActiveEffectDuration(new ActiveEffectDuration(recastLookup));
-        });
+        ctx.enqueueWork(this::sync);
         return true;
+    }
+    @OnlyIn(Dist.CLIENT)
+    public void sync(){
+        Minecraft mc = Minecraft.getInstance();
+        PowerPlayerCapability cap = PowerPlayerCapability.get(mc.player);
+        assert cap!=null;
+        cap.setActiveEffectDuration(new ActiveEffectDuration(recastLookup));
     }
 }

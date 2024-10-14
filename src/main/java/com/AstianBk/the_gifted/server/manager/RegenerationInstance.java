@@ -37,4 +37,7 @@ public class RegenerationInstance {
 
         return regerationTimerRemaining / (float) regerationTimer;
     }
+    public void resetTimer(){
+        this.regerationTimerRemaining=this.regerationTimer;
+    }
 }

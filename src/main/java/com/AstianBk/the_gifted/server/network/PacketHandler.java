@@ -29,14 +29,16 @@ public class PacketHandler {
 
         channel.registerMessage(index++, PacketHandlerAnimations.class, PacketHandlerAnimations::write,
                 PacketHandlerAnimations::new, PacketHandlerAnimations::handle);
-        channel.registerMessage(index++, PacketHandlerPowers.class, PacketHandlerPowers::write,
-                PacketHandlerPowers::new, PacketHandlerPowers::handle);
+
         channel.registerMessage(index++, PacketSyncActivePowers.class, PacketSyncActivePowers::write,
                 PacketSyncActivePowers::new, PacketSyncActivePowers::handle);
+
         channel.registerMessage(index++, PacketSyncData.class, PacketSyncData::write,
                 PacketSyncData::new, PacketSyncData::handle);
+
         channel.registerMessage(index++,PacketSyncCooldown.class,PacketSyncCooldown::toBytes,
                 PacketSyncCooldown::new,PacketSyncCooldown::handle);
+
         channel.messageBuilder(PacketSyncCooldown.class,index++)
                 .encoder(PacketSyncCooldown::toBytes)
                 .decoder(PacketSyncCooldown::new)
@@ -46,10 +48,17 @@ public class PacketHandler {
                 .encoder(PacketSyncDurationEffect::toBytes)
                 .decoder(PacketSyncDurationEffect::new)
                 .consumerNetworkThread(PacketSyncDurationEffect::handle).add();
+
+        channel.messageBuilder(PacketSyncLimbRegeneration.class,index++)
+                .encoder(PacketSyncLimbRegeneration::toBytes)
+                .decoder(PacketSyncLimbRegeneration::new)
+                .consumerNetworkThread(PacketSyncLimbRegeneration::handle).add();
+
         channel.messageBuilder(PacketRemoveActiveEffect.class,index++)
                 .encoder(PacketRemoveActiveEffect::toBytes)
                 .decoder(PacketRemoveActiveEffect::new)
                 .consumerNetworkThread(PacketRemoveActiveEffect::handle).add();
+
         channel.messageBuilder(PacketActiveEffect.class,index++)
                 .encoder(PacketActiveEffect::toBytes)
                 .decoder(PacketActiveEffect::new)

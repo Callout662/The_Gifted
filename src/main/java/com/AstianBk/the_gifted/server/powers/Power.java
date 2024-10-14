@@ -26,20 +26,20 @@ public class Power {
     public boolean instantUse;
     public boolean isTransform;
     public boolean isPassive;
-    public boolean continuousUse;
+    public boolean casting;
     public int level;
     public String name;
     public CompoundTag tag;
     public Map<Attribute, AttributeModifier> attributeModifierMap= Maps.newHashMap();
-    public Power(String name,int castingDuration,int cooldown,int lauchTime,@Nullable ElementPower elementPower,
-                 boolean instantUse,boolean isTransform,boolean continuousUse,boolean isPassive){
+    public Power(String name, int castingDuration, int cooldown, int lauchTime, @Nullable ElementPower elementPower,
+                 boolean instantUse, boolean isTransform, boolean casting, boolean isPassive){
         this.castingDuration=castingDuration;
         this.cooldown=cooldown;
         this.lauchTime =lauchTime;
         this.elementPower=elementPower;
         this.instantUse=instantUse;
         this.isTransform=isTransform;
-        this.continuousUse=continuousUse;
+        this.casting = casting;
         this.level=1;
         this.name=name;
         this.isPassive=isPassive;
@@ -55,7 +55,7 @@ public class Power {
         this.elementPower=power.elementPower;
         this.instantUse= power.instantUse;
         this.isTransform= power.isTransform;
-        this.continuousUse= power.continuousUse;
+        this.casting = power.casting;
         this.descriptionId=power.descriptionId;
         this.isPassive=power.isPassive;
         this.read(tag);
@@ -73,15 +73,15 @@ public class Power {
         this.updateAttributes(player);
     }
 
-    public void effectPassiveForTick(Player player) {
+    public void effectPassiveForTick(Player player, PowerPlayerCapability powerPlayerCapability) {
 
     }
 
     public void updateAttributes(Player player){
 
     }
-    public boolean isContinuousUse() {
-        return this.continuousUse;
+    public boolean isCasting() {
+        return this.casting;
     }
 
     public boolean isInstantUse() {

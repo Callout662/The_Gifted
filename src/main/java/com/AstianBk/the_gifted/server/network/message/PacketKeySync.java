@@ -11,42 +11,42 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketKeySync implements Packet<PacketListener> {
+public class PacketKeySync {
     private final int key;
+    private final int action;
 
 
     public PacketKeySync(FriendlyByteBuf buf) {
         this.key=buf.readInt();
+        this.action=buf.readInt();
     }
 
-    public PacketKeySync(int key) {
+    public PacketKeySync(int key,int action) {
         this.key = key;
+        this.action = action;
     }
 
-    @Override
     public void write(FriendlyByteBuf buf) {
         buf.writeInt(this.key);
+        buf.writeInt(this.action);
     }
 
     public void handle(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() ->{
             Player player = context.get().getSender();
             if(player!=null){
-                handlerAnim(player);
+                sync(player);
             }
         });
         context.get().setPacketHandled(true);
     }
 
-    private void handlerAnim(LivingEntity entity) {
+
+    private void sync(LivingEntity entity) {
         if(entity instanceof Player player){
             PowerPlayerCapability cap=PowerPlayerCapability.get(player);
-            Handler.handledForKey(this.key,cap);
+            Handler.handledForKey(this.key,cap,action);
         }
     }
 
-    @Override
-    public void handle(PacketListener p_131342_) {
-
-    }
 }

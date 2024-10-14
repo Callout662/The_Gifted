@@ -23,7 +23,7 @@ public interface IPowerPlayer extends INBTSerializable<CompoundTag> {
     void tick(Player player);
     void onJoinGame(Player player, EntityJoinLevelEvent event);
     void handledPower(Player player,Power power);
-    public void stopPower(Player player,Power power);
+    public void stopPower(Power power);
     void handledPassive(Player player,Power power);
     boolean canUsePower();
     boolean haveAlterEgo();
@@ -32,6 +32,8 @@ public interface IPowerPlayer extends INBTSerializable<CompoundTag> {
     void syncPower(Player player);
     void upPower();
     void downPower();
-    void swingHand(Player player);
+    void startCasting(Player player);
+    void stopCasting(Power power,Player player);
+
 
 }

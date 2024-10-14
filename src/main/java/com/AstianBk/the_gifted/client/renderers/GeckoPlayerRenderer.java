@@ -31,104 +31,32 @@ import software.bernie.geckolib.model.data.EntityModelData;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.GeoReplacedEntityRenderer;
 
-public class GeckoPlayerRenderer<T extends AnimationPlayerCapability,P extends Player> extends GeoReplacedEntityRenderer<P,T> implements GeoRenderer<T> {
+public class GeckoPlayerRenderer extends GeoReplacedEntityRenderer<Player,AnimationPlayerCapability> implements GeoRenderer<AnimationPlayerCapability> {
     private static final ResourceLocation GUARDIAN_BEAM_LOCATION = new ResourceLocation(TheGifted.MODID,"textures/entity/laser.png");
     private static final RenderType BEAM_RENDER_TYPE = RenderType.entityCutoutNoCull(GUARDIAN_BEAM_LOCATION);
 
     public final ResourceLocation textureSkin;
-    public GeckoPlayerRenderer(EntityRendererProvider.Context renderManager, GeoModel<T> model,ResourceLocation textures,GeoEntity animatable) {
-        super(renderManager, model, (T) animatable);
+    public GeckoPlayerRenderer(EntityRendererProvider.Context renderManager, GeoModel<?> model,ResourceLocation textures,GeoEntity animatable) {
+        super(renderManager, (GeoModel<AnimationPlayerCapability>) model, (AnimationPlayerCapability) animatable);
         this.textureSkin=textures;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(P entity) {
+    public ResourceLocation getTextureLocation(Player entity) {
         return this.textureSkin;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(T animatable) {
+    public ResourceLocation getTextureLocation(AnimationPlayerCapability animatable) {
         return this.textureSkin;
     }
 
     public void renderGeckoPlayer(Entity entity, GeoEntity animatable, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight){
-        super.render((P) entity,entityYaw,partialTick,poseStack,bufferSource,packedLight);
-    }
-
-    public void render(PoseStack pMatrixStack, MultiBufferSource pBuffer, Player player, float pPartialTicks, float pNetHeadYaw, float pHeadPitch) {
-        PowerPlayerCapability cap=PowerPlayerCapability.get(player);
-        if(cap!=null){
-            if(cap.durationEffect.hasDurationForPower("laser")){
-                for(int i=0;i<2;i++){
-                    LaserPower power= (LaserPower) cap.powers.getForName("laser");
-                    pMatrixStack.pushPose();
-                    float f1 = (float)player.level().getDayTime() + pPartialTicks;
-                    float f2 = f1 * 0.5F % 1.0F;
-                    Vec3 vec32 = this.calculateViewVector(pHeadPitch,-pNetHeadYaw);
-                    float f4 = (float)(power.start.subtract(power.end).length() + 1.0D);
-                    vec32 = vec32.normalize();
-                    int j = 255;
-                    int k = 0;
-                    int l = 0;
-                    float f5 = (float)Math.acos(vec32.y);
-                    float f6 = (float)Math.atan2(vec32.z, vec32.x);
-                    float f7 = 1.0F;
-
-                    float f11 = Mth.cos(f7 + 2.3561945F) * 0.282F;
-                    float f12 = Mth.sin(f7 + 2.3561945F) * 0.282F;
-                    float f13 = Mth.cos(f7 + ((float)Math.PI / 4F)) * 0.282F;
-                    float f14 = Mth.sin(f7 + ((float)Math.PI / 4F)) * 0.282F;
-                    float f15 = Mth.cos(f7 + 3.926991F) * 0.282F;
-                    float f16 = Mth.sin(f7 + 3.926991F) * 0.282F;
-                    float f17 = Mth.cos(f7 + 5.4977875F) * 0.282F;
-                    float f18 = Mth.sin(f7 + 5.4977875F) * 0.282F;
-                    float f19 = Mth.cos(f7 + (float)Math.PI) * 0.2F;
-                    float f20 = Mth.sin(f7 + (float)Math.PI) * 0.2F;
-                    float f21 = Mth.cos(f7 + 0.0F) * 0.2F;
-                    float f22 = Mth.sin(f7 + 0.0F) * 0.2F;
-                    float f23 = Mth.cos(f7 + ((float)Math.PI / 2F)) * 0.2F;
-                    float f24 = Mth.sin(f7 + ((float)Math.PI / 2F)) * 0.2F;
-                    float f25 = Mth.cos(f7 + ((float)Math.PI * 1.5F)) * 0.2F;
-                    float f26 = Mth.sin(f7 + ((float)Math.PI * 1.5F)) * 0.2F;
-                    pMatrixStack.translate(i==0 ? 0.08F : -0.08F,1.65F,0F);
-                    pMatrixStack.scale(0.5F,0.5F,0.5F);
-
-                    pMatrixStack.mulPose(Axis.YP.rotationDegrees((((float)Math.PI / 2F) - f6) * (180F / (float)Math.PI)));
-                    pMatrixStack.mulPose(Axis.XP.rotationDegrees(f5 * (180F / (float)Math.PI)));
-
-
-                    VertexConsumer vertexconsumer = pBuffer.getBuffer(BEAM_RENDER_TYPE);
-                    PoseStack.Pose posestack$pose = pMatrixStack.last();
-                    Matrix4f matrix4f = posestack$pose.pose();
-                    Matrix3f matrix3f = posestack$pose.normal();
-                    float f29 = -1.0F + f2;
-                    float f30 = 20.0F * 2.5F + f29;
-                    vertex(vertexconsumer, matrix4f, matrix3f, f19, f4, f20, j, k, l, 0.4999F, f30);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f19, 0.0F, f20, j, k, l, 0.4999F, f29);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f21, 0.0F, f22, j, k, l, 0.0F, f29);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f21, f4, f22, j, k, l, 0.0F, f30);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f23, f4, f24, j, k, l, 0.4999F, f30);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f23, 0.0F, f24, j, k, l, 0.4999F, f29);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f25, 0.0F, f26, j, k, l, 0.0F, f29);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f25, f4, f26, j, k, l, 0.0F, f30);
-                    float f31 = 0.0F;
-                    if (player.tickCount % 2 == 0) {
-                        f31 = 0.5F;
-                    }
-
-                    vertex(vertexconsumer, matrix4f, matrix3f, f11, f4, f12, j, k, l, 0.5F, f31 + 0.5F);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f13, f4, f14, j, k, l, 1.0F, f31 + 0.5F);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f17, f4, f18, j, k, l, 1.0F, f31);
-                    vertex(vertexconsumer, matrix4f, matrix3f, f15, f4, f16, j, k, l, 0.5F, f31);
-
-                    pMatrixStack.popPose();
-                }
-            }
-        }
+        super.render((Player) entity,entityYaw,partialTick,poseStack,bufferSource,packedLight);
     }
 
     @Override
-    public void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void actuallyRender(PoseStack poseStack, AnimationPlayerCapability animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
 
         LivingEntity livingEntity = this.currentEntity;
@@ -191,7 +119,7 @@ public class GeckoPlayerRenderer<T extends AnimationPlayerCapability,P extends P
         }
 
         if (!isReRender) {
-            AnimationState<T> animationState = new AnimationState<T>(animatable, limbSwing, limbSwingAmount, partialTick, isMoving);
+            AnimationState<AnimationPlayerCapability> animationState = new AnimationState<AnimationPlayerCapability>(animatable, limbSwing, limbSwingAmount, partialTick, isMoving);
             long instanceId = getInstanceId(animatable);
 
             animationState.setData(DataTickets.TICK, animatable.getTick(this.currentEntity));

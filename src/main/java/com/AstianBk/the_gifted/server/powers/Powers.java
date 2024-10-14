@@ -50,11 +50,14 @@ public class Powers {
         for (PowerInstance powerInstance:this.getPowers()){
             Power power1=powerInstance.getPower();
             if(power1.name.equals(name)){
-                System.out.print("\n----Entro----\n");
                 power=power1;
             }
         }
         return power;
+    }
+
+    public boolean hasPower(String id){
+        return this.getForName(id)!=null;
     }
 
     public void addPowers(int pos,Power power){

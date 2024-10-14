@@ -8,6 +8,8 @@ import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -35,12 +37,11 @@ public class PacketHandlerAnimations implements Packet<PacketListener> {
     }
 
     public void handle(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() ->{
-            handlerAnim();
-        });
+        context.get().enqueueWork(this::handlerAnim);
         context.get().setPacketHandled(true);
     }
 
+    @OnlyIn(Dist.CLIENT)
     private void handlerAnim() {
         AnimationPlayerCapability cap=AnimationPlayerCapability.get((Player) entity);
         if(cap!=null){
